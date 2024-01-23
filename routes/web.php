@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OlxController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -36,3 +37,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/olx', [OlxController::class, 'subscribeForm'])->name('olx.form');
+Route::post('/olx', [OlxController::class, 'subscribe'])->name('olx.subscribe');
