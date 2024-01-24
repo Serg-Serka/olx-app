@@ -2,41 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Advert;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
-use App\Models\Subscriber;
+use App\Services\OlxAdvertService;
 
 class OlxController extends Controller
 {
+    protected OlxAdvertService $olxService;
+
+    public function __construct(OlxAdvertService $olxService)
+    {
+        $this->olxService = $olxService;
+    }
+
     public function subscribeForm(): Response
     {
         return Inertia::render('Olx/SubscribeForm');
     }
 
-    public function subscribe(Request $request)
+    public function subscribe(Request $request): JsonResponse
     {
         $email = $request->get('email');
         $url = $request->get('url');
 
         $success = false;
-        $subscriber = Subscriber::firstWhere('email', $email);
-        $advert = Advert::firstWhere('url', $url);
+        $advertData = $this->olxService->mapOlxUrl($url);
 
+        if ($advertData['status'] !== 'success') {
+            $message = $advertData['message'];
+        } else {
+            $advert = $this->olxService->getAdvertByUrl($url, $advertData);
+            $subscriber = $this->olxService->getSubscriberByEmail($email);
 
-        if (!$subscriber) {
-
+            $result = $this->olxService->subscribe($advert, $subscriber);
+            $message = $result['message'];
+            $success = $result['success'];
         }
 
-        if (!$advert) {
-
-        }
-
-
-        return response()->json(['success' => $success]);
+        return response()->json(['success' => $success, 'message' => $message]);
     }
 }

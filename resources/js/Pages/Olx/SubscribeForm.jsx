@@ -18,11 +18,9 @@ export default function SubscribeForm() {
     const submit = (e) => {
         e.preventDefault();
 
-        axios.post(route('olx.subscribe')).then(response => {
-            console.log(response);
+        axios.post(route('olx.subscribe'), data).then(response => {
+            console.log(response.data);
         });
-
-        // post(route('olx.subscribe'));
     };
 
     return (
