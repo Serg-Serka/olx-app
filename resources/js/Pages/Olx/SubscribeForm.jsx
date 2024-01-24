@@ -2,11 +2,11 @@ import Guest from "@/Layouts/GuestLayout.jsx";
 import {Head} from "@inertiajs/react";
 import { useForm } from '@inertiajs/react';
 import TextInput from '@/Components/TextInput';
-import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import {Transition} from "@headlessui/react";
 import axios from "axios";
+import {useState} from "react";
+import Modal from "@/Components/Modal.jsx";
 
 export default function SubscribeForm() {
 
@@ -15,11 +15,16 @@ export default function SubscribeForm() {
         email: '',
     });
 
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+
     const submit = (e) => {
         e.preventDefault();
 
         axios.post(route('olx.subscribe'), data).then(response => {
-            console.log(response.data);
+            setShowModal(true);
+            setModalMessage(response.data.message);
+            // console.log(response.data);
         });
     };
 
@@ -52,18 +57,14 @@ export default function SubscribeForm() {
 
                 <div className="flex items-center gap-4 mt-2">
                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-                    {/*<Transition*/}
-                    {/*    show={recentlySuccessful}*/}
-                    {/*    enter="transition ease-in-out"*/}
-                    {/*    enterFrom="opacity-0"*/}
-                    {/*    leave="transition ease-in-out"*/}
-                    {/*    leaveTo="opacity-0"*/}
-                    {/*>*/}
-                    {/*    <p className="text-sm text-gray-600">Saved.</p>*/}
-                    {/*</Transition>*/}
                 </div>
             </form>
+
+            <Modal show={showModal} onClose={() => setShowModal(false)}>
+                <div className="p-5">
+                    {modalMessage}
+                </div>
+            </Modal>
         </Guest>
     );
 }
