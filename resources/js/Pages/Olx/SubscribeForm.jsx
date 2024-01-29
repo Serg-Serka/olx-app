@@ -10,7 +10,7 @@ import Modal from "@/Components/Modal.jsx";
 
 export default function SubscribeForm() {
 
-    const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
+    const { data, setData, processing } = useForm({
         url: '',
         email: '',
     });
@@ -24,7 +24,6 @@ export default function SubscribeForm() {
         axios.post(route('olx.subscribe'), data).then(response => {
             setShowModal(true);
             setModalMessage(response.data.message);
-            // console.log(response.data);
         });
     };
 
